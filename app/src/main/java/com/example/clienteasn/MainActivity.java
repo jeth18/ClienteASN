@@ -3,6 +3,7 @@ package com.example.clienteasn;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DownloadManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.example.clienteasn.Activities.RegisterActivity;
 import com.example.clienteasn.services.network.ApiEndpoint;
 import com.example.clienteasn.services.network.JsonAdapter;
 import com.example.clienteasn.services.network.VolleyS;
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText txtUsername;
     private EditText txtPassword;
     private Button btnSignIn;
+    private Button btnSignUp;
 
     private VolleyS volley;
     protected RequestQueue fRequestQueue;
@@ -44,11 +47,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        txtUsername = findViewById(R.id.txtUsername);
-        txtPassword = findViewById(R.id.txtPassword);
-        btnSignIn = findViewById(R.id.btnSignIn);
-
+        getValuesOfComponents();
         volley = VolleyS.getInstance(MainActivity.this);
         fRequestQueue = volley.getRequestQueue();
 
@@ -58,6 +57,20 @@ public class MainActivity extends AppCompatActivity {
                 loginRequest();
             }
         });
+
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+
+    private void getValuesOfComponents() {
+        txtUsername = findViewById(R.id.txtUsername);
+        txtPassword = findViewById(R.id.txtPassword);
+        btnSignIn = findViewById(R.id.btnSignIn);
+        btnSignUp = findViewById(R.id.btnSignUp);
     }
 
     private void loginRequest() {
@@ -78,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
                             Default d = Default.getInstance(MainActivity.this);
                             d.setToken(result.getToken());
                             Toast.makeText(MainActivity.this, "TK" + d.getToken(), Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+                            MainActivity.this.startActivity(intent);
                         } catch (JSONException e) {
                             Toast.makeText(MainActivity.this, "Cannot parse response", Toast.LENGTH_SHORT).show();
                         }
