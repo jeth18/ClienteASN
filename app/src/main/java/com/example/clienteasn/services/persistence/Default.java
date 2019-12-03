@@ -19,6 +19,26 @@ public class Default {
         return instance;
     }
 
+    public String getCuenta(){
+        return preferences.getString("idCuenta", "");
+    }
+
+    public void setCuenta(String idCuenta){
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("idCuenta", idCuenta);
+        editor.apply();
+    }
+
+    public String getUsuario(){
+        return preferences.getString("idUsuario", "");
+    }
+
+    public void setUsuario(String idUsuario){
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("idUsuario", idUsuario);
+        editor.apply();
+    }
+
     public String getToken(){
         return preferences.getString("token", "");
 

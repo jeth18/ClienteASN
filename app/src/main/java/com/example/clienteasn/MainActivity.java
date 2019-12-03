@@ -18,6 +18,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.example.clienteasn.Activities.AppActivity;
 import com.example.clienteasn.Activities.RegisterActivity;
 import com.example.clienteasn.services.network.ApiEndpoint;
 import com.example.clienteasn.services.network.JsonAdapter;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     private VolleyS volley;
     protected RequestQueue fRequestQueue;
+    private Default d;
 
     public static String TAG = "MainActivity";
 
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         volley = VolleyS.getInstance(MainActivity.this);
         fRequestQueue = volley.getRequestQueue();
 
+
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,7 +64,8 @@ public class MainActivity extends AppCompatActivity {
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+                MainActivity.this.startActivity(intent);
             }
         });
     }
@@ -76,9 +80,11 @@ public class MainActivity extends AppCompatActivity {
     private void loginRequest() {
         Map<String, String> param = new HashMap<>();
         param.put("password", txtPassword.getText().toString());
-        param.put("correo", txtUsername.getText().toString());
+        param.put("usuario", txtUsername.getText().toString());
 
         JSONObject jsonObject = new JSONObject(param);
+
+        Log.d("ObjLogin", jsonObject.toString());
 
         JsonRequest jsonRequest = new JsonObjectRequest(Request.Method.POST,
                 ApiEndpoint.login, jsonObject,
@@ -88,13 +94,20 @@ public class MainActivity extends AppCompatActivity {
                         try {
 
                             LoginPOJO result = JsonAdapter.loginAdapter(response);
-                            Default d = Default.getInstance(MainActivity.this);
+                            d = Default.getInstance(MainActivity.this);
                             d.setToken(result.getToken());
-                            Toast.makeText(MainActivity.this, "TK" + d.getToken(), Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+                            d.setCuenta(result.getCuenta());
+                            d.setUsuario(result.getUsuario());
+                            Toast.makeText(MainActivity.this, "IDUsuario: " + d.getUsuario(), Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(MainActivity.this, AppActivity.class);
                             MainActivity.this.startActivity(intent);
+
+                            finish();
+
                         } catch (JSONException e) {
+
                             Toast.makeText(MainActivity.this, "Cannot parse response", Toast.LENGTH_SHORT).show();
+
                         }
                     }
                 },

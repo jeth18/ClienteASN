@@ -2,11 +2,16 @@
     <string name="app_name">ClienteASN</string>
     <string name="usuario">Usuario</string>
     <string name="password">Password</string>
-    <string name="sign_in">sign_in</string>
+    <string name="sign_in">Iniciar sesión</string>
     <string name="sign_up">Registrar</string>
     <string name="nombre_usuario">Nombre</string>
     <string name="apellido_usuario">Apellidos</string>
     <string name="password_repeated">Repetir password</string>
     <string name="usuario_correo">Correo electronico</string>
-    <string name="numero_celular">Numero de celular</string>
+    <string name="numero_celular">Número de celular</string>
+    <string name="title_activity_app">AppActivity</string>
+    <string name="title_home">Inicio</string>
+    <string name="title_cuenta">Mi Perfil</string>
+    <string name="title_chat">Mensajes</string>
+    <string name="tipBuscar">Buscar amigos</string>
 </resources>
