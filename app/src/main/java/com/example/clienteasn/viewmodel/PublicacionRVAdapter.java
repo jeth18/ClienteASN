@@ -1,8 +1,13 @@
 package com.example.clienteasn.viewmodel;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -10,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.clienteasn.R;
+import com.example.clienteasn.model.Publicacion;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -17,13 +24,16 @@ public class PublicacionRVAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
+    private Context context = null;
 
-    public List<String> mItemList;
+    public List<Publicacion> mItemList;
 
 
-    public PublicacionRVAdapter(List<String> itemList) {
+    public PublicacionRVAdapter(List<Publicacion> itemList, Context context) {
 
         mItemList = itemList;
+        this.context = context;
+        Log.d("Lista publicaciones", mItemList.toString());
     }
 
     @NonNull
@@ -69,12 +79,17 @@ public class PublicacionRVAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     private class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvItem;
+        TextView tvItemUrl;
+        TextView tvItemDescripcion;
+        ImageView imageview;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            tvItem = itemView.findViewById(R.id.tvItem);
+            tvItemUrl = itemView.findViewById(R.id.tvItemUrl);
+            tvItemDescripcion = itemView.findViewById(R.id.tvItemDescripcion);
+            imageview = itemView.findViewById(R.id.imageView);
+
         }
     }
 
@@ -95,8 +110,13 @@ public class PublicacionRVAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     private void populateItemRows(ItemViewHolder viewHolder, int position) {
 
-        String item = mItemList.get(position);
-        viewHolder.tvItem.setText(item);
+        Publicacion item = mItemList.get(position);
+        viewHolder.tvItemUrl.setText(item.getFotoURL());
+        viewHolder.tvItemDescripcion.setText(item.getDescripcion());
+        String url = "http://localhost:8080/api/Publicacion/uploads/" + item.getFotoURL();
+        Log.d("url", url);
+
+        Picasso.with(context).load(url).into(viewHolder.imageview);
 
     }
 }

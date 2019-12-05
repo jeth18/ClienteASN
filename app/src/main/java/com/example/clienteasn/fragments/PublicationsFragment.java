@@ -1,13 +1,12 @@
 package com.example.clienteasn.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.util.LogPrinter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,25 +14,18 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.example.clienteasn.Activities.AppActivity;
-import com.example.clienteasn.MainActivity;
 import com.example.clienteasn.R;
 import com.example.clienteasn.callback.ServerCallBack;
-import com.example.clienteasn.crud.SolicitudCRUD;
 import com.example.clienteasn.model.Publicacion;
 import com.example.clienteasn.services.network.ApiEndpoint;
 import com.example.clienteasn.services.network.JsonAdapter;
+import com.example.clienteasn.services.network.MyJsonArrayRequest;
 import com.example.clienteasn.services.network.VolleyS;
 import com.example.clienteasn.services.persistence.Default;
 import com.example.clienteasn.viewmodel.PublicacionRVAdapter;
@@ -42,7 +34,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 
@@ -50,7 +41,7 @@ public class PublicationsFragment extends Fragment {
 
     RecyclerView recyclerView;
     PublicacionRVAdapter recyclerViewAdapter;
-    ArrayList<String> rowsArrayList = new ArrayList<>();
+    ArrayList<Publicacion> rowsArrayList = new ArrayList<>();
     private ArrayList<String> listaAmigos;
 
     boolean isLoading = false;
@@ -58,6 +49,9 @@ public class PublicationsFragment extends Fragment {
     private VolleyS volley;
     protected RequestQueue fRequestQueue;
     private String TAG = "PublicacionFragment";
+    Context context;
+
+
 
     @Nullable
     @Override
@@ -65,26 +59,30 @@ public class PublicationsFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_publications, container, false);
         recyclerView = v.findViewById(R.id.recyclerViewPubs);
         Default d = Default.getInstance(v.getContext());
+        context = container.getContext();
 
         volley = VolleyS.getInstance(v.getContext());
         fRequestQueue = volley.getRequestQueue();
 
         idUsuario = d.getUsuario();
+
         ServerCallBack serverCallBack = new ServerCallBack() {
             @Override
             public void setListaAmigos(ArrayList<String> listaAmigosCB) {
                 listaAmigos = listaAmigosCB;
-                initAdapter();
-                initScrollListener();
+                populatePublications(0);
                 Log.d("amigos", listaAmigos.toString());
-                populatePublications();
             }
+
         };
+
         getAmigosUsuario(serverCallBack);
+
+
         return v;
     }
 
-    private void populatePublications() {
+    private void populatePublications(final int nextLimit) {
         JSONArray jsonArray = new JSONArray();
         for (int i = 0; i < listaAmigos.size(); i++) {
             jsonArray.put(listaAmigos.get(i));
@@ -92,46 +90,52 @@ public class PublicationsFragment extends Fragment {
 
         JSONObject amigosObj = new JSONObject();
         try {
-            amigosObj.put("inicioSegmento", 0);
+            amigosObj.put("inicioSegmento", nextLimit);
             amigosObj.put("listaAmigos", jsonArray);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        Log.d("ObjetoJSON", amigosObj.toString());
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, ApiEndpoint.feedfotos, amigosObj,
-                new Response.Listener<JSONObject>() {
+        MyJsonArrayRequest request = new MyJsonArrayRequest(Request.Method.POST, ApiEndpoint.feedfotos, amigosObj,
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(JSONArray response) {
                         try {
-                            JSONArray resJsonArray = new JSONArray(response);
-                            ArrayList<Publicacion> result = JsonAdapter.publicacionAdapter(resJsonArray);
-
-                            for (int i = 0; i < result.size(); i++) {
-                                Log.d("Publicacion " + i, result.get(i).toString());
+                            ArrayList<Publicacion> publicaciones = JsonAdapter.publicacionAdapter(response);
+                            //Log.d("Publicaciones", response.getJSONObject(0).getJSONArray("comentarios").toString());
+                            for (int i = 0; i < publicaciones.size(); i++){
+                                rowsArrayList.add(publicaciones.get(i));
                             }
 
-                        } catch (JSONException e) {
-                            Log.d("PubFragment", "Cannot parse JSON");
+                            if(nextLimit == 0){
+                                initAdapter();
+                                initScrollListener();
+                            }else if(nextLimit > 0){
+                                recyclerViewAdapter.notifyDataSetChanged();
+                                isLoading = false;
+                            }
+
+                        }catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e("Error", error.getMessage());
+                        Log.e(TAG, "Testing Network");
                     }
-                }
+                });
 
-        );
-
-        fRequestQueue.add(jsonObjectRequest);
+        fRequestQueue.add(request);
     }
 
     private void initAdapter() {
 
-        recyclerViewAdapter = new PublicacionRVAdapter(rowsArrayList);
+        Log.d("Publicaciones", rowsArrayList.toString());
+
+        recyclerViewAdapter = new PublicacionRVAdapter(rowsArrayList, context);
+
         recyclerView.setAdapter(recyclerViewAdapter);
     }
 
@@ -163,8 +167,11 @@ public class PublicationsFragment extends Fragment {
 
     private void loadMore() {
         rowsArrayList.add(null);
-        recyclerViewAdapter.notifyItemInserted(rowsArrayList.size() - 1);
-
+        recyclerView.post(new Runnable() {
+            public void run() {
+                recyclerViewAdapter.notifyItemInserted(rowsArrayList.size() - 1);
+            }
+        });
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -174,20 +181,17 @@ public class PublicationsFragment extends Fragment {
                 int scrollPosition = rowsArrayList.size();
                 recyclerViewAdapter.notifyItemRemoved(scrollPosition);
                 int currentSize = scrollPosition;
-                int nextLimit = currentSize + 10;
+                int nextLimit = currentSize;
 
-                while (currentSize - 1 < nextLimit) {
-                    rowsArrayList.add("Item " + currentSize);
-                    currentSize++;
-                }
+                populatePublications(nextLimit);
 
-                recyclerViewAdapter.notifyDataSetChanged();
-                isLoading = false;
+
             }
         }, 2000);
 
 
     }
+
 
     public void getAmigosUsuario(final ServerCallBack serverCallBack){
         final ArrayList<String> amigos = new ArrayList<>();
