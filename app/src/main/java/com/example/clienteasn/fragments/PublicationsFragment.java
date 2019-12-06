@@ -28,6 +28,7 @@ import com.example.clienteasn.services.network.JsonAdapter;
 import com.example.clienteasn.services.network.MyJsonArrayRequest;
 import com.example.clienteasn.services.network.VolleyS;
 import com.example.clienteasn.services.persistence.Default;
+import com.example.clienteasn.viewmodel.ClickListener;
 import com.example.clienteasn.viewmodel.PublicacionRVAdapter;
 
 import org.json.JSONArray;
@@ -88,6 +89,9 @@ public class PublicationsFragment extends Fragment {
             jsonArray.put(listaAmigos.get(i));
         }
 
+        jsonArray.put(idUsuario);
+
+
         JSONObject amigosObj = new JSONObject();
         try {
             amigosObj.put("inicioSegmento", nextLimit);
@@ -134,7 +138,17 @@ public class PublicationsFragment extends Fragment {
 
         Log.d("Publicaciones", rowsArrayList.toString());
 
-        recyclerViewAdapter = new PublicacionRVAdapter(rowsArrayList, context);
+        recyclerViewAdapter = new PublicacionRVAdapter(rowsArrayList, context, new ClickListener() {
+            @Override
+            public void onPositionClicked(int position) {
+
+            }
+
+            @Override
+            public void onClicked(int position) {
+
+            }
+        });
 
         recyclerView.setAdapter(recyclerViewAdapter);
     }

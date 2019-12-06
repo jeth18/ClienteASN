@@ -1,5 +1,7 @@
 package com.example.clienteasn.services.network;
 
+import android.util.Log;
+
 import com.example.clienteasn.model.Comentario;
 import com.example.clienteasn.model.Publicacion;
 import com.example.clienteasn.model.Reaccion;
@@ -27,6 +29,24 @@ public class JsonAdapter {
         return res;
     }
 
+    public static Comentario comentarioAdapter(JSONObject jsonObject) throws JSONException {
+
+        Log.d("Prueba", jsonObject.toString());
+        Comentario res = new Comentario();
+        res.setId(jsonObject.getString("_id"));
+        res.setComentario(jsonObject.getString("comentario"));
+
+        Log.d("usuarioPropietario", "Hola");
+
+        JSONObject usuarioPropietario = jsonObject.getJSONObject("usuario");
+
+
+        res.setUsuarioPropietario(usuarioPropietario.getString("_id"));
+        res.setNombreUsuarioPropietario(usuarioPropietario.getString("nombrePublico"));
+        return res;
+    }
+
+
     public static ArrayList<Publicacion> publicacionAdapter(JSONArray jsonArray) throws JSONException {
         ArrayList<Publicacion> res = new ArrayList<>();
         for(int i = 0; i < jsonArray.length(); i++) {
@@ -38,7 +58,10 @@ public class JsonAdapter {
             p.setFotoURL(jsonObject.getString("fotoUrl"));
             p.setFechaCarga(jsonObject.getString("fechaCarga"));
             p.setDescripcion(jsonObject.getString("descripcion"));
-            p.setUsuarioPropietario(jsonObject.getString("usuario"));
+
+            JSONObject usuarioPublicacion = jsonObject.getJSONObject("usuario");
+            p.setUsuarioPropietario(usuarioPublicacion.getString("_id"));
+            p.setNombreUsuarioPropietario(usuarioPublicacion.getString("nombrePublico"));
 
             ArrayList<Comentario> comentarios = new ArrayList<>();
             ArrayList<Reaccion> reacciones  = new ArrayList<>();
@@ -46,9 +69,11 @@ public class JsonAdapter {
                 JSONObject jsonComentario = comentariosJSON.getJSONObject(x);
                 Comentario comentarioTemp = new Comentario();
                 comentarioTemp.setComentario(jsonComentario.getString("comentario"));
-                comentarioTemp.setUsuarioPropietario(jsonComentario.getString("usuario"));
-                comentarioTemp.setId(jsonComentario.getString("_id"));
 
+                comentarioTemp.setId(jsonComentario.getString("_id"));
+                JSONObject jsonUsuarioComentario = jsonComentario.getJSONObject("usuario");
+                comentarioTemp.setUsuarioPropietario(jsonUsuarioComentario.getString("_id"));
+                comentarioTemp.setNombreUsuarioPropietario(jsonUsuarioComentario.getString("nombrePublico"));
                 comentarios.add(comentarioTemp);
             }
 

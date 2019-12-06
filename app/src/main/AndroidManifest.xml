@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:allowBackup="true"
@@ -13,10 +15,15 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/NoActionBar">
+        <activity
+            android:name=".Activities.ComentarioActivity"
+            android:label="@string/title_activity_comentario"
+            android:theme="@style/NoActionBar.NoActionBar"></activity>
+        <activity android:name=".Activities.BuscarAmigoActivity" />
         <activity
             android:name=".Activities.AppActivity"
-            android:label="@string/title_activity_app"></activity>
+            android:label="@string/title_activity_app" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,7 +45,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -72,7 +75,8 @@ public class MyProfileFragment extends Fragment implements View.OnClickListener 
     private final static int IMAGE_RESULT = 200;
     FloatingActionButton fabCamera, fabUpload;
     Bitmap mBitmap;
-    TextView textView;
+    EditText txtDescripcion;
+    ImageView imageView;
 
     @Nullable
     @Override
@@ -83,9 +87,11 @@ public class MyProfileFragment extends Fragment implements View.OnClickListener 
 
         fabCamera = v.findViewById(R.id.fab);
         fabUpload = v.findViewById(R.id.fabUpload);
-        textView = v.findViewById(R.id.textView);
+        txtDescripcion = v.findViewById(R.id.txtDescripcion);
         fabCamera.setOnClickListener(this);
         fabUpload.setOnClickListener(this);
+        imageView = v.findViewById(R.id.imageView);
+        imageView.setImageResource(R.drawable.ic_add_to_photos_black_24dp);
 
         askPermissions();
         initRetrofitClient();
@@ -175,7 +181,7 @@ public class MyProfileFragment extends Fragment implements View.OnClickListener 
 
         if (resultCode == Activity.RESULT_OK) {
 
-            ImageView imageView = getView().findViewById(R.id.imageView);
+            imageView = getView().findViewById(R.id.imageView);
 
             if (requestCode == IMAGE_RESULT) {
 
@@ -309,33 +315,34 @@ public class MyProfileFragment extends Fragment implements View.OnClickListener 
             Default d = Default.getInstance(getContext());
 
             String idUsuario = d.getUsuario();
+            String descripcion = txtDescripcion.getText().toString();
 
-            JSONObject publicacion = new JSONObject();
-            publicacion.put("idUsuario", idUsuario);
-
-
+            String reqbody = "{" +
+                    "\"idUsuario\":" + "\"" + idUsuario + "\"," +
+                    "\"descripcion\":" + "\"" + descripcion + "\"" +
+                    "}";
 
             RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), file);
             MultipartBody.Part body = MultipartBody.Part.createFormData("imagen", file.getName(), reqFile);
-            RequestBody name = RequestBody.create(MediaType.parse("application/json"), idUsuario);
+            RequestBody name = RequestBody.create(MediaType.parse("application/json"), reqbody);
 
             Call<ResponseBody> req = apiService.postImage(body, name);
             req.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
                     if (response.code() == 200) {
-                        textView.setText("Uploaded Successfully!");
-                        textView.setTextColor(Color.BLUE);
+                        txtDescripcion.setText("");
+                        imageView.setImageBitmap(null);
+
                     }
 
-                    Toast.makeText(getActivity().getApplicationContext(), response.code() + " ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getApplicationContext(), "Foto subida con exito", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    textView.setText("Uploaded Failed!");
-                    textView.setTextColor(Color.RED);
-                    Toast.makeText(getActivity().getApplicationContext(), "Request failed", Toast.LENGTH_SHORT).show();
+                    txtDescripcion.setText("");
+                    Toast.makeText(getActivity().getApplicationContext(), "Vuelva a intentarlo mas tarde", Toast.LENGTH_SHORT).show();
                     t.printStackTrace();
                 }
             });
@@ -344,8 +351,6 @@ public class MyProfileFragment extends Fragment implements View.OnClickListener 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
             e.printStackTrace();
         }
     }

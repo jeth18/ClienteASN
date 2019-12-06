@@ -10,6 +10,7 @@ public class Publicacion {
     private String descripcion;
     private String id;
     private String usuarioPropietario;
+    private String nombreUsuarioPropietario;
 
     public Publicacion(){}
 
@@ -75,5 +76,13 @@ public class Publicacion {
 
     public void setUsuarioPropietario(String usuarioPropietario) {
         this.usuarioPropietario = usuarioPropietario;
+    }
+
+    public String getNombreUsuarioPropietario() {
+        return nombreUsuarioPropietario;
+    }
+
+    public void setNombreUsuarioPropietario(String nombreUsuarioPropietario) {
+        this.nombreUsuarioPropietario = nombreUsuarioPropietario;
     }
 }

@@ -2,29 +2,73 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_width="match_parent"
+    android:layout_height="350dp"
+    android:layout_margin="10dp"
+    android:background="#DDF1E4"
+    android:orientation="vertical">
 
 
     <TextView
         android:id="@+id/tvItemUrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Text URL"
-        />
+        android:paddingLeft="5dp"
+        android:paddingBottom="5dp"
+        android:text="Usuario"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/tvItemDescripcion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingTop="15dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="8dp"
         android:text="Text Descripcion"
-        />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="228dp"
-        android:layout_gravity="top" />
+        android:layout_gravity="top"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnMegusta"
+            style="@android:style/Widget.DeviceDefault.ImageButton"
+            android:layout_width="66dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/ic_favorite_border_black_24dp" />
+
+        <TextView
+            android:id="@+id/tvItemreaccion"
+            android:layout_width="89dp"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="likes" />
+
+        <Button
+            android:id="@+id/btnComentarios"
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:text="@string/comentarios" />
+
+    </LinearLayout>
 
 
 </LinearLayout>

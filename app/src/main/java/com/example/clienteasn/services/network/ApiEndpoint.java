@@ -14,4 +14,7 @@ public class ApiEndpoint {
     //Publicaciones
     public static String feedfotos = baseURL + "/Publicacion/feedfotos";
     public static String upload = baseURL + "/Publicacion/upload";
+
+    //Comentarios
+    public static String nuevoComentario = baseURL + "/Publicacion/nuevocomentario";
 }

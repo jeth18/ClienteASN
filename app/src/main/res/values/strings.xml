@@ -14,4 +14,8 @@
     <string name="title_cuenta">Mi Perfil</string>
     <string name="title_chat">Mensajes</string>
     <string name="tipBuscar">Buscar amigos</string>
+    <string name="tipAgregarComentario">Agregar comentario...</string>
+    <string name="me_gusta">Me gusta</string>
+    <string name="comentarios">Ver comentarios</string>
+    <string name="title_activity_comentario">ComentarioActivity</string>
 </resources>

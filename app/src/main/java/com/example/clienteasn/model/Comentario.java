@@ -1,9 +1,13 @@
 package com.example.clienteasn.model;
 
-public class Comentario {
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public class Comentario implements Serializable {
     private String comentario;
     private String usuarioPropietario;
     private String id;
+    private String nombreUsuarioPropietario;
 
     public Comentario(){}
 
@@ -34,5 +38,13 @@ public class Comentario {
 
     public void setUsuarioPropietario(String usuarioPropietario) {
         this.usuarioPropietario = usuarioPropietario;
+    }
+
+    public String getNombreUsuarioPropietario() {
+        return nombreUsuarioPropietario;
+    }
+
+    public void setNombreUsuarioPropietario(String nombreUsuarioPropietario) {
+        this.nombreUsuarioPropietario = nombreUsuarioPropietario;
     }
 }
