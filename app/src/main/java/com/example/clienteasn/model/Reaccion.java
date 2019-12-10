@@ -4,6 +4,7 @@ public class Reaccion {
     private String tipo;
     private String usuarioPropietario;
     private String id;
+    private String nombreUsuarioPropietario;
 
     public Reaccion(){}
 
@@ -34,5 +35,13 @@ public class Reaccion {
 
     public void setUsuarioPropietario(String usuarioPropietario) {
         this.usuarioPropietario = usuarioPropietario;
+    }
+
+    public String getNombreUsuarioPropietario() {
+        return nombreUsuarioPropietario;
+    }
+
+    public void setNombreUsuarioPropietario(String nombreUsuarioPropietario) {
+        this.nombreUsuarioPropietario = nombreUsuarioPropietario;
     }
 }

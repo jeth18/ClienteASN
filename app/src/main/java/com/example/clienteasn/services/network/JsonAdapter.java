@@ -17,9 +17,17 @@ import java.util.ArrayList;
 public class JsonAdapter {
     public static LoginPOJO loginAdapter(JSONObject jsonObject) throws JSONException {
         LoginPOJO res = new LoginPOJO();
-        res.setToken(jsonObject.getString("token"));
-        res.setCuenta(jsonObject.getString("idCuenta"));
-        res.setUsuario(jsonObject.getString("idUsuario"));
+        boolean isModerador = jsonObject.getBoolean("isModerador");
+        if(isModerador){
+            res.setToken(jsonObject.getString("token"));
+            res.setCuenta(jsonObject.getString("idCuenta"));
+            res.setModerador(jsonObject.getBoolean("isModerador"));
+        } else {
+            res.setToken(jsonObject.getString("token"));
+            res.setCuenta(jsonObject.getString("idCuenta"));
+            res.setUsuario(jsonObject.getString("idUsuario"));
+            res.setModerador(jsonObject.getBoolean("isModerador"));
+        }
         return res;
     }
 
@@ -81,9 +89,11 @@ public class JsonAdapter {
                 JSONObject jsonReaccion = reaccionesJSON.getJSONObject(j);
                 Reaccion reaccionTemp = new Reaccion();
                 reaccionTemp.setTipo(jsonReaccion.getString("tipo"));
-                reaccionTemp.setUsuarioPropietario(jsonReaccion.getString("usuario"));
-                reaccionTemp.setId(jsonReaccion.getString("_id"));
 
+                reaccionTemp.setId(jsonReaccion.getString("_id"));
+                JSONObject jsonUsuarioReaccion = jsonReaccion.getJSONObject("usuario");
+                reaccionTemp.setUsuarioPropietario(jsonUsuarioReaccion.getString("_id"));
+                reaccionTemp.setNombreUsuarioPropietario(jsonUsuarioReaccion.getString("nombrePublico"));
                 reacciones.add(reaccionTemp);
             }
 

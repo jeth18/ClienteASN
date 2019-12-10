@@ -20,6 +20,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.example.clienteasn.Activities.AppActivity;
+import com.example.clienteasn.Activities.ModeradorActivity;
 import com.example.clienteasn.Activities.RegisterActivity;
 import com.example.clienteasn.services.network.ApiEndpoint;
 import com.example.clienteasn.services.network.JsonAdapter;
@@ -93,15 +94,28 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-
+                            Log.d("Usuario", response.toString());
                             LoginPOJO result = JsonAdapter.loginAdapter(response);
                             d = Default.getInstance(MainActivity.this);
                             d.setToken(result.getToken());
                             d.setCuenta(result.getCuenta());
                             d.setUsuario(result.getUsuario());
-                            Toast.makeText(MainActivity.this, "IDUsuario: " + d.getUsuario(), Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(MainActivity.this, AppActivity.class);
-                            MainActivity.this.startActivity(intent);
+                            Log.d("Usuario2", response.toString());
+
+                            if(result.isModerador() == false){
+                                Log.d("Usuario3", response.toString());
+                                Toast.makeText(MainActivity.this, "Bienvenido", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(MainActivity.this, AppActivity.class);
+                                MainActivity.this.startActivity(intent);
+                                finish();
+                            } else {
+                                Log.d("Usuario4", response.toString());
+                                Toast.makeText(MainActivity.this, "Bienvenido Moderador", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(MainActivity.this, ModeradorActivity.class);
+                                MainActivity.this.startActivity(intent);
+                                finish();
+                            }
+
 
                             finish();
 

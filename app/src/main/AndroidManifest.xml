@@ -16,10 +16,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/NoActionBar">
+        <activity android:name=".Activities.ModeradorActivity"></activity>
         <activity
             android:name=".Activities.ComentarioActivity"
             android:label="@string/title_activity_comentario"
-            android:theme="@style/NoActionBar.NoActionBar"></activity>
+            android:theme="@style/NoActionBar.NoActionBar" />
         <activity android:name=".Activities.BuscarAmigoActivity" />
         <activity
             android:name=".Activities.AppActivity"

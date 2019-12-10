@@ -14,7 +14,14 @@ public class ApiEndpoint {
     //Publicaciones
     public static String feedfotos = baseURL + "/Publicacion/feedfotos";
     public static String upload = baseURL + "/Publicacion/upload";
+    public static String feedmoderador = baseURL + "/Publicacion/feedmoderador";
 
     //Comentarios
     public static String nuevoComentario = baseURL + "/Publicacion/nuevocomentario";
+
+    //Reacciones
+    public static String nuevaReaccion = baseURL + "/Publicacion/nuevareaccion";
+    public static String eliminarReaccion = baseURL + "/Publicacion/delReaccion";
+
+
 }

@@ -11,6 +11,7 @@ public class Publicacion {
     private String id;
     private String usuarioPropietario;
     private String nombreUsuarioPropietario;
+    private boolean iLike;
 
     public Publicacion(){}
 
@@ -84,5 +85,13 @@ public class Publicacion {
 
     public void setNombreUsuarioPropietario(String nombreUsuarioPropietario) {
         this.nombreUsuarioPropietario = nombreUsuarioPropietario;
+    }
+
+    public boolean isiLike() {
+        return iLike;
+    }
+
+    public void setiLike(boolean iLike) {
+        this.iLike = iLike;
     }
 }

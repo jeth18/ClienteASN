@@ -10,7 +10,7 @@
 
 
     <TextView
-        android:id="@+id/tvItemUrl"
+        android:id="@+id/tvItemUrlModerador"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="5dp"
@@ -20,7 +20,7 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/tvItemDescripcion"
+        android:id="@+id/tvItemDescripcionModerador"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="10dp"
@@ -31,7 +31,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/imageViewModerador"
         android:layout_width="match_parent"
         android:layout_height="228dp"
         android:layout_gravity="top"
@@ -44,30 +44,14 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/btnMegusta"
-            style="@android:style/Widget.DeviceDefault.ImageButton"
-            android:layout_width="66dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/ic_favorite_border_black_24dp"
-            android:tint="@color/cardview_dark_background"/>
-
-        <TextView
-            android:id="@+id/tvItemreaccion"
-            android:layout_width="89dp"
-            android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
-            android:text="" />
-
         <Button
-            android:id="@+id/btnComentarios"
+            android:id="@+id/btnEliminarPublicacion"
             android:layout_width="212dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_weight="1"
-            android:text="@string/comentarios" />
+            android:text="Eliminar" />
 
     </LinearLayout>
 
