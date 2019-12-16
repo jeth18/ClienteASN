@@ -2,7 +2,9 @@ package com.example.clienteasn.services.network;
 
 import android.util.Log;
 
+import com.example.clienteasn.model.AmigoBusqueda;
 import com.example.clienteasn.model.Comentario;
+import com.example.clienteasn.model.Cuenta;
 import com.example.clienteasn.model.Publicacion;
 import com.example.clienteasn.model.Reaccion;
 import com.example.clienteasn.services.pojo.LoginPOJO;
@@ -37,6 +39,37 @@ public class JsonAdapter {
         return res;
     }
 
+    public static AmigoBusqueda cuentaAdapter(JSONObject jsonObject) throws JSONException {
+        AmigoBusqueda res = new AmigoBusqueda();
+        res.setId(jsonObject.getString("_id"));
+        res.setNombre(jsonObject.getString("nombre"));
+        res.setApellidos(jsonObject.getString("apellido"));
+        res.setUsuario(jsonObject.getString("usuario"));
+
+        JSONObject usuarioAsociado = jsonObject.getJSONObject("usuarioAsociado");
+        res.setIdUsuario(usuarioAsociado.getString("_id"));
+        res.setFoto_perfil(usuarioAsociado.getString("foto_perfil"));
+        res.setDescripcion(usuarioAsociado.getString("descripcion"));
+
+        return res;
+    }
+
+    public static Cuenta miCuentaAdapter(JSONObject jsonObject) throws JSONException {
+        Cuenta res = new Cuenta();
+        res.setId(jsonObject.getString("_id"));
+        res.setCorreo(jsonObject.getString("correo"));
+        res.setNombre(jsonObject.getString("nombre"));
+        res.setApellido(jsonObject.getString("apellido"));
+        res.setUsuario(jsonObject.getString("usuario"));
+
+        JSONObject usuarioAsociado = jsonObject.getJSONObject("usuarioAsociado");
+        res.setIdUsuario(usuarioAsociado.getString("_id"));
+        res.setFoto_perfil(usuarioAsociado.getString("foto_perfil"));
+        res.setDescripcion(usuarioAsociado.getString("descripcion"));
+
+        return res;
+    }
+
     public static Comentario comentarioAdapter(JSONObject jsonObject) throws JSONException {
 
         Log.d("Prueba", jsonObject.toString());
@@ -52,6 +85,17 @@ public class JsonAdapter {
         res.setUsuarioPropietario(usuarioPropietario.getString("_id"));
         res.setNombreUsuarioPropietario(usuarioPropietario.getString("nombrePublico"));
         return res;
+    }
+
+    public static Reaccion reaccionAdapter(JSONObject jsonObject) throws JSONException {
+        Reaccion res = new Reaccion();
+        res.setId(jsonObject.getString("_id"));
+        res.setTipo(jsonObject.getString("tipo"));
+        JSONObject usuarioPropietario = jsonObject.getJSONObject("usuario");
+        res.setUsuarioPropietario(usuarioPropietario.getString("_id"));
+        res.setNombreUsuarioPropietario(usuarioPropietario.getString("nombrePublico"));
+        return res;
+
     }
 
 

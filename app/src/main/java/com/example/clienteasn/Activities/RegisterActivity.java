@@ -107,7 +107,7 @@ public class RegisterActivity extends AppCompatActivity implements Validator.Val
     }
 
     private void getValuesOfComponents() {
-        txtNombre = findViewById(R.id.txtNombre)  ;
+        txtNombre = findViewById(R.id.txtNombreBusqueda)  ;
         txtApellido = findViewById(R.id.txtApellido);
         txtUsuario = findViewById(R.id.txtUsuario);
         txtPassword = findViewById(R.id.txtPassword);

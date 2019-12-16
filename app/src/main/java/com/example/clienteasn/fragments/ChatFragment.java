@@ -12,13 +12,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.clienteasn.Activities.BuscarAmigoActivity;
-import com.example.clienteasn.Activities.RegisterActivity;
-import com.example.clienteasn.MainActivity;
+import com.example.clienteasn.Activities.PerfilActivity;
 import com.example.clienteasn.R;
 
 public class ChatFragment extends Fragment{
 
     private Button btnAmigos;
+    private Button btnMiPerfil;
 
     @Nullable
     @Override
@@ -26,7 +26,15 @@ public class ChatFragment extends Fragment{
         View v = inflater.inflate(R.layout.fragment_chat, container, false);
 
         btnAmigos = v.findViewById(R.id.btnBuscar);
+        btnMiPerfil = v.findViewById(R.id.btnMiPerfil);
 
+        btnMiPerfil.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), PerfilActivity.class);
+                v.getContext().startActivity(intent);
+            }
+        });
 
         btnAmigos.setOnClickListener(new View.OnClickListener(){
 

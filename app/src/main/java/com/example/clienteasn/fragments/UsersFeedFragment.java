@@ -1,28 +1,26 @@
 package com.example.clienteasn.fragments;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import android.widget.Button;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.clienteasn.R;
-import com.example.clienteasn.callback.ServerCallBack;
 import com.example.clienteasn.model.Publicacion;
 import com.example.clienteasn.model.Reaccion;
 import com.example.clienteasn.services.network.ApiEndpoint;
@@ -31,7 +29,7 @@ import com.example.clienteasn.services.network.MyJsonArrayRequest;
 import com.example.clienteasn.services.network.VolleyS;
 import com.example.clienteasn.services.persistence.Default;
 import com.example.clienteasn.viewmodel.ClickListener;
-import com.example.clienteasn.viewmodel.PublicacionRVAdapter;
+import com.example.clienteasn.viewmodel.ModeradorRVAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,12 +38,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class PublicationsFragment extends Fragment {
+public class UsersFeedFragment extends Fragment {
 
     RecyclerView recyclerView;
-    PublicacionRVAdapter recyclerViewAdapter;
+    ModeradorRVAdapter recyclerViewAdapter;
     ArrayList<Publicacion> rowsArrayList = new ArrayList<>();
-    private ArrayList<String> listaAmigos;
 
     boolean isLoading = false;
     String idUsuario;
@@ -54,62 +51,44 @@ public class PublicationsFragment extends Fragment {
     private String TAG = "PublicacionFragment";
     Context context;
 
-
-
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_publications, container, false);
-        recyclerView = v.findViewById(R.id.recyclerViewPubs);
-        Default d = Default.getInstance(v.getContext());
-        context = container.getContext();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_users_feed, container, false);
 
-        volley = VolleyS.getInstance(v.getContext());
+        recyclerView = v.findViewById(R.id.recyclerViewModerador);
+
+        context = container.getContext();
+        Default d = Default.getInstance(context);
+        volley = VolleyS.getInstance(context);
         fRequestQueue = volley.getRequestQueue();
 
-        idUsuario = d.getUsuario();
         initAdapter();
         initScrollListener();
+        idUsuario = d.getUsuario();
 
-        ServerCallBack serverCallBack = new ServerCallBack() {
-            @Override
-            public void setListaAmigos(ArrayList<String> listaAmigosCB) {
-                listaAmigos = listaAmigosCB;
-                populatePublications(0);
-                Log.d("amigos", listaAmigos.toString());
-            }
-
-        };
-
-        getAmigosUsuario(serverCallBack);
-
+        populatePublications(0);
 
         return v;
     }
 
     private void populatePublications(final int nextLimit) {
-        JSONArray jsonArray = new JSONArray();
-        for (int i = 0; i < listaAmigos.size(); i++) {
-            jsonArray.put(listaAmigos.get(i));
-        }
-
-        jsonArray.put(idUsuario);
-
-
         JSONObject amigosObj = new JSONObject();
         try {
             amigosObj.put("inicioSegmento", nextLimit);
-            amigosObj.put("listaAmigos", jsonArray);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        MyJsonArrayRequest request = new MyJsonArrayRequest(Request.Method.POST, ApiEndpoint.feedfotos, amigosObj,
+        MyJsonArrayRequest request = new MyJsonArrayRequest(Request.Method.POST, ApiEndpoint.feedmoderador + "/", amigosObj,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
                         try {
+                            Log.d("comentarios", response.getJSONObject(1).getJSONArray("comentarios").toString());
+                            Log.d("reacciones", response.getJSONObject(1).getJSONArray("reacciones").toString());
                             ArrayList<Publicacion> publicaciones = JsonAdapter.publicacionAdapter(response);
+                            //Log.d("Publicaciones", response.getJSONObject(0).getJSONArray("comentarios").toString());
                             for (int i = 0; i < publicaciones.size(); i++){
                                 rowsArrayList.add(publicaciones.get(i));
                             }
@@ -140,29 +119,29 @@ public class PublicationsFragment extends Fragment {
 
         Log.d("Publicaciones", rowsArrayList.toString());
 
-        recyclerViewAdapter = new PublicacionRVAdapter(rowsArrayList, context, new ClickListener() {
+        recyclerViewAdapter = new ModeradorRVAdapter(rowsArrayList, context, new ClickListener() {
             @Override
             public void onPositionClicked(int position) {}
 
             @Override
-            public void onEliminarClicked(int position) {}
+            public void onEliminarClicked(int position) {
+                rowsArrayList.remove(position);
+            }
 
             @Override
             public void onReaccionarClicked(int position, Reaccion reaccion) {
-                Log.d("Size reacciones", rowsArrayList.get(position).getReacciones().size() + "");
-                //rowsArrayList.get(position).getReacciones().add(reaccion);
-                rowsArrayList.get(position).setiLike(true);
+
             }
 
             @Override
-            public void onDeleteReaccionClicked(int position, int positionReaccion) {
-                Log.d("Size reacciones", rowsArrayList.get(position).getReacciones().size() + "");
-                //rowsArrayList.get(position).getReacciones().remove(positionReaccion);
-                rowsArrayList.get(position).setiLike(false);
+            public void onDeleteReaccionClicked(int position, int postionReaccion) {
+
             }
 
             @Override
-            public void onComentarioEliminado(int position) {}
+            public void onComentarioEliminado(int position) {
+
+            }
         });
 
         recyclerView.setAdapter(recyclerViewAdapter);
@@ -221,45 +200,4 @@ public class PublicationsFragment extends Fragment {
 
     }
 
-
-    public void getAmigosUsuario(final ServerCallBack serverCallBack){
-        final ArrayList<String> amigos = new ArrayList<>();
-        JsonArrayRequest request = new JsonArrayRequest(ApiEndpoint.amigosUsuario + idUsuario,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        try {
-                            Log.d("PubFragment", response.toString());
-                            for (int i = 0; i < response.length(); i++) {
-                                String amigo = response.get(i).toString();
-                                Log.d("PubFragment", amigo);
-                                amigos.add(amigo);
-                            }
-
-                            serverCallBack.setListaAmigos(amigos);
-
-
-                        } catch (JSONException e) {
-                            Log.d("PubFragment", "Cannot parse JSON");
-                        }
-
-                    }
-                },
-                new Response.ErrorListener(){
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                }
-        ){
-            @Override
-            public int getMethod() {
-                return Method.GET;
-            }
-        };
-        fRequestQueue.add(request);
-
-
-    }
 }

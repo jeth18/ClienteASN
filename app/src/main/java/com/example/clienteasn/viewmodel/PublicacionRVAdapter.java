@@ -2,7 +2,6 @@ package com.example.clienteasn.viewmodel;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Icon;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,12 +22,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.clienteasn.Activities.ComentarioActivity;
-import com.example.clienteasn.MainActivity;
 import com.example.clienteasn.R;
 import com.example.clienteasn.model.Publicacion;
 import com.example.clienteasn.model.Reaccion;
 import com.example.clienteasn.services.network.ApiEndpoint;
 import com.example.clienteasn.services.network.ApiService;
+import com.example.clienteasn.services.network.JsonAdapter;
 import com.example.clienteasn.services.network.VolleyS;
 import com.example.clienteasn.services.persistence.Default;
 import com.squareup.picasso.Picasso;
@@ -40,9 +38,6 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
 
 public class PublicacionRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -150,7 +145,7 @@ public class PublicacionRVAdapter extends RecyclerView.Adapter<RecyclerView.View
                         jsonObject.put("reaccion", "1");
                         jsonObject.put("idUsuario", d.getUsuario());
                     } catch (JSONException e){
-                        Toast.makeText(context, "Cannot set object", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Cannot set reaccion jsonobject");
                     }
 
                     JsonObjectRequest reaccionNuevaRequest = new JsonObjectRequest(Request.Method.PUT,
@@ -159,9 +154,17 @@ public class PublicacionRVAdapter extends RecyclerView.Adapter<RecyclerView.View
 
                         @Override
                         public void onResponse(JSONObject response) {
-                            Toast.makeText(context, "Te gusta", Toast.LENGTH_SHORT).show();
-                            mItemList.get(getAdapterPosition()).setiLike(true);
-                            btnMegusta.setBackgroundResource(R.drawable.ic_favorite_border_red);
+                            try {
+                                Reaccion resultado = JsonAdapter.reaccionAdapter(response);
+                                mItemList.get(getAdapterPosition()).setiLike(true);
+                                mItemList.get(getAdapterPosition()).getReacciones().add(resultado);
+                                Toast.makeText(context, "Te gusta", Toast.LENGTH_SHORT).show();
+                                listenerRef.get().onReaccionarClicked(getAdapterPosition(), resultado);
+                                notifyDataSetChanged();
+
+                            } catch (JSONException e) {
+                                Log.e(TAG, "Cannot parse JSON response Reaccion");
+                            }
                         }
                     },
                             new Response.ErrorListener() {
@@ -174,18 +177,22 @@ public class PublicacionRVAdapter extends RecyclerView.Adapter<RecyclerView.View
                     volley.addToQueue(reaccionNuevaRequest);
                 }else if(mItemList.get(getAdapterPosition()).isiLike()) {
                     ArrayList<Reaccion> reacciones = mItemList.get(getAdapterPosition()).getReacciones();
-                    Log.d("Reacciones borrar", reacciones.toString());
                     for(int i = 0; i < reacciones.size(); i++){
                         if(reacciones.get(i).getUsuarioPropietario().compareTo(d.getUsuario()) == 0) {
+                            final int posicionReaccion = i;
                             JsonObjectRequest eliminarReaccionRequest = new JsonObjectRequest(Request.Method.DELETE,
                                     ApiEndpoint.eliminarReaccion + "/" + reacciones.get(i).getId(), null,
                                     new Response.Listener<JSONObject>() {
 
                                         @Override
                                         public void onResponse(JSONObject response) {
-                                            Toast.makeText(context, "No me gusta", Toast.LENGTH_SHORT).show();
+
                                             mItemList.get(getAdapterPosition()).setiLike(false);
-                                            btnMegusta.setBackgroundResource(R.drawable.ic_favorite_border_black_24dp);
+                                            mItemList.get(getAdapterPosition()).getReacciones().remove(posicionReaccion);
+                                            Toast.makeText(context, "No me gusta", Toast.LENGTH_SHORT).show();
+                                            listenerRef.get().onDeleteReaccionClicked(getAdapterPosition(), posicionReaccion);
+                                            notifyDataSetChanged();
+
                                         }
                                     },
                                     new Response.ErrorListener() {
@@ -209,9 +216,8 @@ public class PublicacionRVAdapter extends RecyclerView.Adapter<RecyclerView.View
                 intent.putExtra("comentarios", mItemList.get(getAdapterPosition()).getComentarios());
                 intent.putExtra("idPublicacion", mItemList.get(getAdapterPosition()).getId());
                 context.startActivity(intent);
+                listenerRef.get().onPositionClicked(getAdapterPosition());
             }
-
-            listenerRef.get().onPositionClicked(getAdapterPosition());
         }
     }
 
@@ -237,16 +243,22 @@ public class PublicacionRVAdapter extends RecyclerView.Adapter<RecyclerView.View
         viewHolder.tvItemUrl.setText(item.getNombreUsuarioPropietario());
         viewHolder.tvItemDescripcion.setText(item.getDescripcion());
         viewHolder.tvItemReaccion.setText(item.getReacciones().size() + "");
-        Log.d("Prueba", item.getReacciones().size() + "");
-        for(int i = 0; i < reacciones.size(); i++){
-            Log.d("Prueba", reacciones.get(i).getUsuarioPropietario());
-            Log.d("Usuario", d.getUsuario());
-            if(reacciones.get(i).getUsuarioPropietario().compareTo(d.getUsuario()) == 0) {
-                Log.d("Prueba", "Prueba");
-                mItemList.get(position).setiLike(true);
-                viewHolder.btnMegusta.setBackgroundResource(R.drawable.ic_favorite_border_red);
+        if(reacciones.size() > 0) {
+            for(int i = 0; i < reacciones.size(); i++){
+                if(reacciones.get(i).getUsuarioPropietario().compareTo(d.getUsuario()) == 0) {
+                    mItemList.get(position).setiLike(true);
+                    viewHolder.btnMegusta.setBackgroundResource(R.drawable.ic_favorite_border_red);
+                } else {
+                    mItemList.get(position).setiLike(false);
+                    viewHolder.btnMegusta.setBackgroundResource(R.drawable.ic_favorite_border_black_24dp);
+                }
             }
+        } else {
+            mItemList.get(position).setiLike(false);
+            viewHolder.btnMegusta.setBackgroundResource(R.drawable.ic_favorite_border_black_24dp);
         }
+
+
 
         String url = "http://10.0.2.2:8080/public/" + item.getFotoURL();
         Picasso.with(context).setLoggingEnabled(true);

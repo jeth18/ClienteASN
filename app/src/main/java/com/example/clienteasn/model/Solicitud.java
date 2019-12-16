@@ -1,6 +1,7 @@
 package com.example.clienteasn.model;
 
 public class Solicitud {
+    private String id;
     private String usuarioEnvia;
     private String usuarioRecibe;
     private String estadoSolicitud;
@@ -33,5 +34,13 @@ public class Solicitud {
 
     public void setEstadoSolicitud(String estadoSolicitud) {
         this.estadoSolicitud = estadoSolicitud;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

@@ -9,6 +9,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.clienteasn.MainActivity;
 import com.example.clienteasn.model.Comentario;
+import com.example.clienteasn.model.Reaccion;
 import com.example.clienteasn.services.network.ApiEndpoint;
 import com.example.clienteasn.services.network.JsonAdapter;
 import com.example.clienteasn.services.network.VolleyS;
@@ -86,14 +87,19 @@ public class ComentarioActivity extends AppCompatActivity {
 
         recyclerViewAdapter = new ComentarioRVAdapter(comentarios, this, new ClickListener() {
             @Override
-            public void onPositionClicked(int position) {
-
-            }
+            public void onPositionClicked(int position) {}
 
             @Override
-            public void onClicked(int position) {
+            public void onEliminarClicked(int position) {}
 
-            }
+            @Override
+            public void onReaccionarClicked(int position, Reaccion reaccion) {}
+
+            @Override
+            public void onDeleteReaccionClicked(int position, int postionReaccion) {}
+
+            @Override
+            public void onComentarioEliminado(int position) {}
         });
 
         recyclerView.setAdapter(recyclerViewAdapter);

@@ -13,13 +13,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.clienteasn.R;
 import com.example.clienteasn.model.Publicacion;
 import com.example.clienteasn.model.Reaccion;
+import com.example.clienteasn.services.network.ApiEndpoint;
 import com.example.clienteasn.services.network.VolleyS;
 import com.example.clienteasn.services.persistence.Default;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -34,7 +41,7 @@ public class ModeradorRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private VolleyS volley;
     protected RequestQueue fRequestQueue;
     Default d;
-    private String TAG = "AppActivity";
+    private String TAG = "ModeradorActivity";
 
 
     public List<Publicacion> mItemList;
@@ -67,7 +74,6 @@ public class ModeradorRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
 
         if (viewHolder instanceof ModeradorRVAdapter.ItemViewHolder) {
-
             populateItemRows((ModeradorRVAdapter.ItemViewHolder) viewHolder, position);
         } else if (viewHolder instanceof ModeradorRVAdapter.LoadingViewHolder) {
             showLoadingView((ModeradorRVAdapter.LoadingViewHolder) viewHolder, position);
@@ -120,11 +126,26 @@ public class ModeradorRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public void onClick(View v) {
 
             if (v.getId() == btnEliminarPublicacion.getId()) {
+                JsonObjectRequest deletePublicacionRequest = new JsonObjectRequest(Request.Method.DELETE,
+                        ApiEndpoint.publicacion + "/" + mItemList.get(getAdapterPosition()).getId(),
+                        null, new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                listenerRef.get().onEliminarClicked(getAdapterPosition());
+                                mItemList.remove(getAdapterPosition());
+                                notifyDataSetChanged();
+                            }
+                        },
+                        new Response.ErrorListener(){
 
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.e(TAG, "Testing network");
+                            }
+                        }
+                        );
+                volley.addToQueue(deletePublicacionRequest);
             }
-
-
-            listenerRef.get().onPositionClicked(getAdapterPosition());
         }
     }
 

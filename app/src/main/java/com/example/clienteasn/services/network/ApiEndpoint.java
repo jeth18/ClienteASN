@@ -4,14 +4,19 @@ public class ApiEndpoint {
     private static String host = "10.0.2.2:8080";
     public static String baseURL = "http://" + host + "/api";
     public static String ping = baseURL + "/ping";
+
+    //Cuenta
     public static String login = baseURL + "/Cuenta/login";
     public static String register = baseURL + "/Cuenta";
-
+    public static String obtenerCuenta = baseURL + "/Cuenta/buscarCuenta";
+    public static String miCuenta = baseURL + "/Cuenta/MiCuenta";
 
     //Solictudes
     public static String amigosUsuario = baseURL + "/Solicitud/amigos/";
+    public static String agregarAmigo = baseURL + "/Solicitud/";
 
     //Publicaciones
+    public static String publicacion = baseURL + "/Publicacion";
     public static String feedfotos = baseURL + "/Publicacion/feedfotos";
     public static String upload = baseURL + "/Publicacion/upload";
     public static String feedmoderador = baseURL + "/Publicacion/feedmoderador";
