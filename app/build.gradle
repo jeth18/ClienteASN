@@ -37,4 +37,10 @@ dependencies {
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
+
+    //GRPC
+    implementation project(':protobuf')
+    implementation 'com.android.support:multidex:1.0.3' // multiDex support
+    implementation "io.grpc:grpc-protobuf-lite:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
 }

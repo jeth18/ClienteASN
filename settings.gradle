@@ -1,2 +1,2 @@
-include ':app'
+include ':app', ':protobuf'
 rootProject.name='ClienteASN'

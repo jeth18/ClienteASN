@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/NoActionBar">
-        <activity android:name=".Activities.PerfilActivity"></activity>
+        <activity android:name=".Activities.ChatActivity"></activity>
+        <activity android:name=".Activities.PerfilActivity" />
         <activity android:name=".Activities.ModeradorActivity" />
         <activity
             android:name=".Activities.ComentarioActivity"

@@ -1,0 +1,26 @@
+syntax = "proto3"; 
+ 
+package example; 
+ 
+service Chat { 
+    rpc join(stream Message) returns (stream Message){}
+    rpc send(Message) returns (Message){}
+    rpc newChat(ChatGroup) returns (ChatGroup){}
+}
+ 
+message Message { 
+    string external_id = 1;
+    Member member = 2;
+    string text = 3;
+    ChatGroup chatgroup = 4;
+}
+
+message ChatGroup { //Solo necesitas mandarlo con los miembros la primera vez que creas el chat
+    string external_id = 1;
+    repeated Member members = 2;
+}
+
+message Member { //El usuario que envia
+    string external_id = 1;
+    string username = 2;  
+}
