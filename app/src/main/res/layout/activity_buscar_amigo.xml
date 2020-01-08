@@ -41,13 +41,13 @@
     <FrameLayout
         android:id="@+id/frameResult"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:visibility="invisible">
+        android:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="201dp"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -83,6 +83,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="" />
+
+            <Button
+                android:id="@+id/btnMensaje"
+                android:layout_width="wrap_content"
+                android:layout_height="89dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:text="Enviar" />
 
         </LinearLayout>
     </FrameLayout>

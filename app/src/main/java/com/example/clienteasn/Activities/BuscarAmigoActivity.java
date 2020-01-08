@@ -3,6 +3,7 @@ package com.example.clienteasn.Activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.example.clienteasn.services.network.ApiEndpoint;
 import com.example.clienteasn.services.network.JsonAdapter;
 import com.example.clienteasn.services.network.VolleyS;
 import com.example.clienteasn.services.persistence.Default;
+import com.google.gson.JsonArray;
 import com.mobsandgeeks.saripaar.ValidationError;
 import com.mobsandgeeks.saripaar.Validator;
 import com.mobsandgeeks.saripaar.annotation.NotEmpty;
@@ -251,5 +253,47 @@ public class BuscarAmigoActivity extends AppCompatActivity implements Validator.
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    public void crearChat() throws JSONException{
+        JSONObject member1 = new JSONObject();
+        JSONObject member2 = new JSONObject();
+
+        member1.put("member", idUsuario);
+        member2.put("member", amigoPorAgregar.getIdUsuario());
+
+        JSONArray members = new JSONArray();
+        members.put(member1);
+        members.put(member2);
+
+        JSONObject chatGroup = new JSONObject();
+        chatGroup.put("members", members);
+
+        JsonObjectRequest nuevoChatRequest = new JsonObjectRequest(Request.Method.POST, ApiEndpoint.chatGroup,
+                chatGroup, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Toast.makeText(BuscarAmigoActivity.this, "Se ha creado un nuevo chat", Toast.LENGTH_SHORT).show();
+
+                try {
+                    String idChatGrupo = response.getString("_id");
+                    Intent intent = new Intent(BuscarAmigoActivity.this , ChatActivity.class);
+                    intent.putExtra("idChat",idChatGrupo);
+                    BuscarAmigoActivity.this.startActivity(intent);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+
+        volley.addToQueue(nuevoChatRequest);
     }
 }

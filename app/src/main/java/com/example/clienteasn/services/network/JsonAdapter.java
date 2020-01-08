@@ -5,8 +5,10 @@ import android.util.Log;
 import com.example.clienteasn.model.AmigoBusqueda;
 import com.example.clienteasn.model.Comentario;
 import com.example.clienteasn.model.Cuenta;
+import com.example.clienteasn.model.Mensaje;
 import com.example.clienteasn.model.Publicacion;
 import com.example.clienteasn.model.Reaccion;
+import com.example.clienteasn.model.ChatGroup;
 import com.example.clienteasn.services.pojo.LoginPOJO;
 import com.example.clienteasn.services.pojo.RegisterPOJO;
 
@@ -36,6 +38,21 @@ public class JsonAdapter {
     public static RegisterPOJO registerAdapter(JSONObject jsonObject) throws  JSONException {
         RegisterPOJO res = new RegisterPOJO();
         res.setUsuario(jsonObject.getString("usuario"));
+        return res;
+    }
+
+    public static ChatGroup chatGroupAdapter(JSONObject jsonObject) throws  JSONException {
+        ChatGroup res = new ChatGroup();
+        JSONArray members = jsonObject.getJSONArray("members");
+        JSONObject member1 = members.getJSONObject(0);
+        JSONObject member2 = members.getJSONObject(1);
+
+        res.setIdChatG(jsonObject.getString("_id"));
+        res.setIdUsuario1(member1.getString("_id"));
+        res.setNombreUsuario1(member1.getString("nombrePublico"));
+        res.setIdUsuario2(member2.getString("_id"));
+        res.setNombreUsuario2(member2.getString("nombrePublico"));
+
         return res;
     }
 
@@ -149,4 +166,37 @@ public class JsonAdapter {
         return res;
     }
 
+    public static ArrayList<Mensaje> mensajesAdapter(JSONArray jsonArray) throws JSONException {
+        ArrayList<Mensaje> res = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            Mensaje m = new Mensaje();
+            m.setId(jsonObject.getString("_id"));
+            m.setIdChatG(jsonObject.getString("chatgroup"));
+            JSONObject member = jsonObject.getJSONObject("member");
+            m.setIdUsuario(member.getString("_id"));
+            m.setNombreUsuario(member.getString("nombrePublico"));
+            m.setTextMensaje(jsonObject.getString("message"));
+
+            res.add(m);
+        }
+
+        return res;
+    }
+
+    public static Mensaje mensajeAdapter(JSONObject jsonObject) throws JSONException {
+
+        Mensaje m = new Mensaje();
+        m.setId(jsonObject.getString("_id"));
+        m.setIdChatG(jsonObject.getString("chatgroup"));
+        JSONObject member = jsonObject.getJSONObject("member");
+        m.setIdUsuario(member.getString("_id"));
+        m.setNombreUsuario(member.getString("nombrePublico"));
+        m.setTextMensaje(jsonObject.getString("message"));
+
+        return m;
+
+    }
 }
+
+
