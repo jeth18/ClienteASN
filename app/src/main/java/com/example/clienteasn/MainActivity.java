@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements Validator.Validat
                             d.setToken(result.getToken());
                             d.setCuenta(result.getCuenta());
                             d.setUsuario(result.getUsuario());
+                            d.setUserName(result.getUsername());
 
                             if(result.isModerador() == false){
                                 Log.d("Usuario3", response.toString());

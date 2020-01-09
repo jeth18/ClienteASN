@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class JsonAdapter {
@@ -30,6 +31,7 @@ public class JsonAdapter {
             res.setToken(jsonObject.getString("token"));
             res.setCuenta(jsonObject.getString("idCuenta"));
             res.setUsuario(jsonObject.getString("idUsuario"));
+            res.setUsername(jsonObject.getString("usuario"));
             res.setModerador(jsonObject.getBoolean("isModerador"));
         }
         return res;
@@ -46,13 +48,37 @@ public class JsonAdapter {
         JSONArray members = jsonObject.getJSONArray("members");
         JSONObject member1 = members.getJSONObject(0);
         JSONObject member2 = members.getJSONObject(1);
+        JSONObject usuario1 = member1.getJSONObject("member");
+        JSONObject usuario2 = member2.getJSONObject("member");
 
         res.setIdChatG(jsonObject.getString("_id"));
-        res.setIdUsuario1(member1.getString("_id"));
-        res.setNombreUsuario1(member1.getString("nombrePublico"));
-        res.setIdUsuario2(member2.getString("_id"));
-        res.setNombreUsuario2(member2.getString("nombrePublico"));
+        res.setIdUsuario1(usuario1.getString("_id"));
+        res.setNombreUsuario1(usuario1.getString("nombrePublico"));
+        res.setIdUsuario2(usuario2.getString("_id"));
+        res.setNombreUsuario2(usuario2.getString("nombrePublico"));
 
+        return res;
+    }
+
+    public static ArrayList<ChatGroup> chatGroupsAdapter(JSONArray jsonArray) throws JSONException{
+        ArrayList<ChatGroup> res = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++){
+            ChatGroup newChat = new ChatGroup();
+            JSONObject chat = jsonArray.getJSONObject(i);
+            JSONArray members = chat.getJSONArray("members");
+            JSONObject member1 = members.getJSONObject(0);
+            JSONObject member2 = members.getJSONObject(1);
+            JSONObject usuario1 = member1.getJSONObject("member");
+            JSONObject usuario2 = member2.getJSONObject("member");
+
+            newChat.setIdChatG(chat.getString("_id"));
+            newChat.setIdUsuario1(usuario1.getString("_id"));
+            newChat.setNombreUsuario1(usuario1.getString("nombrePublico"));
+            newChat.setIdUsuario2(usuario2.getString("_id"));
+            newChat.setNombreUsuario2(usuario2.getString("nombrePublico"));
+
+            res.add(newChat);
+        }
         return res;
     }
 
@@ -185,17 +211,13 @@ public class JsonAdapter {
     }
 
     public static Mensaje mensajeAdapter(JSONObject jsonObject) throws JSONException {
-
         Mensaje m = new Mensaje();
         m.setId(jsonObject.getString("_id"));
         m.setIdChatG(jsonObject.getString("chatgroup"));
-        JSONObject member = jsonObject.getJSONObject("member");
-        m.setIdUsuario(member.getString("_id"));
-        m.setNombreUsuario(member.getString("nombrePublico"));
+        m.setIdUsuario(jsonObject.getString("member"));
+        m.setNombreUsuario("Yo");
         m.setTextMensaje(jsonObject.getString("message"));
-
         return m;
-
     }
 }
 

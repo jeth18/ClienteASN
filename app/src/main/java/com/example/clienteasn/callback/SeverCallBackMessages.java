@@ -7,5 +7,6 @@ import java.util.ArrayList;
 
 public interface SeverCallBackMessages {
     void setListaMessages(ArrayList<Mensaje> listaMessages);
+    void afterGetGrupo();
 
 }

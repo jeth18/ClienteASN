@@ -39,6 +39,16 @@ public class Default {
         editor.apply();
     }
 
+    public String getUserName(){
+        return preferences.getString("username", "");
+    }
+
+    public void setUserName(String username){
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("username", username);
+        editor.apply();
+    }
+
     public String getToken(){
         return preferences.getString("token", "");
 

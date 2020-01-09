@@ -23,9 +23,11 @@ import com.example.clienteasn.R;
 import com.example.clienteasn.callback.ServerCallBack;
 import com.example.clienteasn.model.AmigoBusqueda;
 import com.example.clienteasn.model.Reaccion;
+import com.example.clienteasn.services.network.AndroidStreamObserver;
 import com.example.clienteasn.services.network.ApiEndpoint;
 import com.example.clienteasn.services.network.JsonAdapter;
 import com.example.clienteasn.services.network.VolleyS;
+import com.example.clienteasn.services.network.gRPCEndPoint;
 import com.example.clienteasn.services.persistence.Default;
 import com.google.gson.JsonArray;
 import com.mobsandgeeks.saripaar.ValidationError;
@@ -38,11 +40,20 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import example.ChatOuterClass;
+import io.grpc.ManagedChannel;
+import example.ChatGrpc;
+import example.ChatOuterClass.*;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
 
 public class BuscarAmigoActivity extends AppCompatActivity implements Validator.ValidationListener {
 
     private String idUsuario;
     private String idCuenta;
+    private String username;
     @NotEmpty
     private EditText txtBuscarAmigos;
     private TextView txtUsuarioBusqueda;
@@ -50,12 +61,20 @@ public class BuscarAmigoActivity extends AppCompatActivity implements Validator.
     private TextView txtApellidoBusqueda;
     private Button btnAgregar;
     private Button btnBuscarAmigo;
+    private Button btnEnviarMensaje;
     private FrameLayout frameResult;
 
     private ArrayList<String> listaAmigos;
     protected AmigoBusqueda amigoPorAgregar;
+    protected AmigoBusqueda amigoMensaje;
 
     private Validator validator;
+
+    private ManagedChannel mChan;
+    private StreamObserver<Message> req;
+    private ChatGrpc.ChatBlockingStub stub;
+    private ChatGrpc.ChatStub stubAsync;
+    ChatOuterClass.ChatGroup chatGroup;
 
     private VolleyS volley;
     protected RequestQueue fRequestQueue;
@@ -79,6 +98,7 @@ public class BuscarAmigoActivity extends AppCompatActivity implements Validator.
         txtApellidoBusqueda = findViewById(R.id.txtApellidoBusqueda);
         btnAgregar = findViewById(R.id.btnAgregar);
         btnBuscarAmigo = findViewById(R.id.btnBuscarAmigo);
+        btnEnviarMensaje = findViewById(R.id.btnMensaje);
         btnBuscarAmigo.setEnabled(false);
         frameResult = findViewById(R.id.frameResult);
 
@@ -86,6 +106,7 @@ public class BuscarAmigoActivity extends AppCompatActivity implements Validator.
 
         idUsuario = d.getUsuario();
         idCuenta = d.getCuenta();
+        username = d.getUserName();
 
         ServerCallBack serverCallBack = new ServerCallBack() {
             @Override
@@ -115,6 +136,22 @@ public class BuscarAmigoActivity extends AppCompatActivity implements Validator.
             }
         });
 
+        btnEnviarMensaje.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                try {
+                    crearChat();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        mChan = ManagedChannelBuilder.forAddress(gRPCEndPoint.mHostIp, gRPCEndPoint.mPort)
+        .usePlaintext(true)
+        .build();
+        stubAsync = ChatGrpc.newStub(mChan);
+
         getAmigosUsuario(serverCallBack);
 
     }
@@ -140,6 +177,8 @@ public class BuscarAmigoActivity extends AppCompatActivity implements Validator.
 
                 }
             }
+
+
         );
 
         volley.addToQueue(agregarAmigoRequest);
@@ -153,6 +192,9 @@ public class BuscarAmigoActivity extends AppCompatActivity implements Validator.
                     public void onResponse(JSONObject response) {
                         try {
                             AmigoBusqueda result = JsonAdapter.cuentaAdapter(response);
+                            amigoMensaje = new AmigoBusqueda();
+                            amigoMensaje.setIdUsuario(result.getIdUsuario());
+                            amigoMensaje.setUsuario(result.getUsuario());
                             setResultadoFrame(result);
                         } catch (JSONException e) {
                             Log.e(TAG, "Cannot parse JSON response");
@@ -260,13 +302,13 @@ public class BuscarAmigoActivity extends AppCompatActivity implements Validator.
         JSONObject member2 = new JSONObject();
 
         member1.put("member", idUsuario);
-        member2.put("member", amigoPorAgregar.getIdUsuario());
+        member2.put("member", amigoMensaje.getIdUsuario());
 
         JSONArray members = new JSONArray();
         members.put(member1);
         members.put(member2);
 
-        JSONObject chatGroup = new JSONObject();
+        final JSONObject chatGroup = new JSONObject();
         chatGroup.put("members", members);
 
         JsonObjectRequest nuevoChatRequest = new JsonObjectRequest(Request.Method.POST, ApiEndpoint.chatGroup,
@@ -276,10 +318,51 @@ public class BuscarAmigoActivity extends AppCompatActivity implements Validator.
                 Toast.makeText(BuscarAmigoActivity.this, "Se ha creado un nuevo chat", Toast.LENGTH_SHORT).show();
 
                 try {
-                    String idChatGrupo = response.getString("_id");
-                    Intent intent = new Intent(BuscarAmigoActivity.this , ChatActivity.class);
-                    intent.putExtra("idChat",idChatGrupo);
-                    BuscarAmigoActivity.this.startActivity(intent);
+
+                    final String idChatGrupo = response.getString("_id");
+                    ChatOuterClass.Member memberOne = ChatOuterClass.Member.newBuilder()
+                            .setExternalId(idUsuario)
+                            .setUsername(username)
+                            .build();
+                    ChatOuterClass.Member memberTwo = ChatOuterClass.Member.newBuilder()
+                            .setExternalId(amigoMensaje.getIdUsuario())
+                            .setUsername(amigoMensaje.getUsuario())
+                            .build();
+
+                    ArrayList<ChatOuterClass.Member> members = new ArrayList<>();
+                    members.add(memberOne);
+                    members.add(memberTwo);
+                    ChatOuterClass.ChatGroup newChatGroup = ChatOuterClass.ChatGroup.newBuilder()
+                            .setExternalId(idChatGrupo)
+                            .addAllMembers(members)
+                            .build();
+                    try {
+                        stubAsync.newChat(newChatGroup, new StreamObserver<ChatOuterClass.ChatGroup>(){
+
+                            @Override
+                            public void onNext(ChatGroup value) {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable t) {
+
+                            }
+
+                            @Override
+                            public void onCompleted() {
+
+                            }
+                        });
+                        Intent intent = new Intent(BuscarAmigoActivity.this , ChatActivity.class);
+                        intent.putExtra("idChat",idChatGrupo);
+                        BuscarAmigoActivity.this.startActivity(intent);
+
+                    } catch (Exception ex) {
+                        Log.e("BuscarAmigoActivity", ex.getMessage());
+                    }
+
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -289,11 +372,13 @@ public class BuscarAmigoActivity extends AppCompatActivity implements Validator.
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
+                        Log.e("BuscarAmigoActivity", error.getMessage());
                     }
                 }
         );
 
         volley.addToQueue(nuevoChatRequest);
     }
+
+
 }

@@ -41,7 +41,6 @@ import java.util.List;
 
 public class PublicacionRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    ApiService apiService;
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
     private Context context = null;
@@ -50,7 +49,6 @@ public class PublicacionRVAdapter extends RecyclerView.Adapter<RecyclerView.View
     protected RequestQueue fRequestQueue;
     Default d;
     private String TAG = "AppActivity";
-
 
     public List<Publicacion> mItemList;
 

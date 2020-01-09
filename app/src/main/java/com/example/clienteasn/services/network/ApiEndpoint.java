@@ -2,7 +2,7 @@ package com.example.clienteasn.services.network;
 
 public class ApiEndpoint {
     private static String host = "10.0.2.2:8080";
-    //private static String host = "192.168.43.12:8080";
+    //private static String host = "192.168.1.78:8080";
     public static String baseURL = "http://" + host + "/api";
     public static String ping = baseURL + "/ping";
 
@@ -34,6 +34,7 @@ public class ApiEndpoint {
     public static String getMessages = baseURL + "/ChatGroup/getMessages/";
     public static String getChatGroup = baseURL + "/ChatGroup/getGroup/";
     public static String sendMessage = baseURL + "/ChatGroup/saveMessage";
+    public static String getChatGroupsUser = baseURL + "/ChatGroup/";
 
 
 

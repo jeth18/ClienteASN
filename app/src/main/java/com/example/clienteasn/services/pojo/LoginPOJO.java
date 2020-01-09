@@ -4,6 +4,7 @@ public class LoginPOJO {
     private String token;
     private String cuenta;
     private String usuario;
+    private String username;
     private boolean isModerador;
 
     public String getToken(){
@@ -28,6 +29,14 @@ public class LoginPOJO {
 
     public void setUsuario(String usuario) {
         this.usuario = usuario;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public boolean isModerador() {

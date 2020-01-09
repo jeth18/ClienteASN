@@ -9,9 +9,9 @@
     tools:context=".Activities.ChatActivity">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewComment"
+        android:id="@+id/recyclerViewMessages"
         android:layout_width="match_parent"
-        android:layout_height="780dp"
+        android:layout_height="365dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
